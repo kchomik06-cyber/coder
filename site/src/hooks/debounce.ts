@@ -32,6 +32,25 @@ type UseDebouncedFunctionReturn<Args extends unknown[]> = Readonly<{
  * debounce values (for example to make a checkbox fire immediately but to
  * debounce a text input).
  */
+/**
+ * Hook: useDebouncedFunction
+ *
+ * Creates a stable debounced wrapper around the provided callback that is safe to
+ * use inside React components. The returned functions keep stable references so
+ * they do not change across renders, while the hook internally tracks the most
+ * recent callback and debounce timeout to ensure expected behaviour.
+ *
+ * Notes:
+ * - The debounced wrapper is synchronous (it does not return a Promise). If a
+ *   supplied callback is async, it will be invoked but the wrapper won't await it.
+ * - If debounceTimeoutMs is a function, it is invoked with the current args to
+ *   compute a per-call debounce delay.
+ *
+ * @typeParam Args - tuple of argument types accepted by the callback.
+ * @param callback - Function to debounce.
+ * @param debounceTimeoutMs - Milliseconds to debounce or a function that returns ms.
+ * @returns An object containing the debounced function and a cancel function.
+ */
 export function useDebouncedFunction<
 	// Parameterizing on the args instead of the whole callback function type to
 	// avoid type contravariance issues
@@ -82,7 +101,16 @@ export function useDebouncedFunction<
 }
 
 /**
- * Takes any value, and returns out a debounced version of it.
+ * Hook: useDebouncedValue
+ *
+ * Returns a debounced snapshot of `value` that updates after `debounceTimeoutMs`
+ * milliseconds. When `debounceTimeoutMs` is 0 the hook flushes synchronously to
+ * avoid an extra render and to keep behaviour intuitive for immediate updates.
+ *
+ * @template T - the value type.
+ * @param value - The input value to debounce.
+ * @param debounceTimeoutMs - Timeout in milliseconds (must be integer >= 0).
+ * @returns The debounced value.
  */
 export function useDebouncedValue<T>(value: T, debounceTimeoutMs: number): T {
 	if (!Number.isInteger(debounceTimeoutMs) || debounceTimeoutMs < 0) {
@@ -90,10 +118,8 @@ export function useDebouncedValue<T>(value: T, debounceTimeoutMs: number): T {
 			`Invalid value ${debounceTimeoutMs} for debounceTimeoutMs. Value must be an integer greater than or equal to zero.`,
 		);
 	}
-
-	const [debouncedValue, setDebouncedValue] = useState(value);
-
-	// If the debounce timeout is ever zero, synchronously flush any state syncs.
+	const [debouncedValue, setDebouncedValue] = useState(value);
+	// If the debounce timeout is ever zero, synchronously flush any state syncs.
 	// Doing this mid-render instead of in useEffect means that we drastically cut
 	// down on needless re-renders, and we also avoid going through the event loop
 	// to do a state sync that is *intended* to happen immediately
@@ -104,12 +130,10 @@ export function useDebouncedValue<T>(value: T, debounceTimeoutMs: number): T {
 		if (debounceTimeoutMs === 0) {
 			return;
 		}
-
-		const timeoutId = setTimeout(() => {
+		const timeoutId = setTimeout(() => {
 			setDebouncedValue(value);
 		}, debounceTimeoutMs);
 		return () => clearTimeout(timeoutId);
 	}, [value, debounceTimeoutMs]);
-
-	return debouncedValue;
+	return debouncedValue;
 }

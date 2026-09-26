@@ -74,5 +74,12 @@
 	"typescript.preferences.autoImportSpecifierExcludeRegexes": [
 		// we prefer people use `lodash/foo` over `lodash`
 		"^lodash$"
-	]
+	],
+	"editor.formatOnSave": true,
+	"editor.wordWrap": "wordWrapColumn",
+	"files.exclude": {
+		"": true
+	},
+	"editor.formatOnPaste": true,
+	"editor.mouseWheelZoom": true
 }

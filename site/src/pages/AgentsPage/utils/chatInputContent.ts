@@ -1,6 +1,10 @@
 import type * as TypesGen from "#/api/typesGenerated";
 import type { PendingAttachment } from "../components/ChatPageContent";
 
+/**
+ * Represents one logical piece of text or file-reference content in the chat
+ * composer.
+ */
 export type ChatComposerContentPart =
 	| { readonly type: "text"; readonly text: string }
 	| {
@@ -13,6 +17,9 @@ export type ChatComposerContentPart =
 			};
 	  };
 
+/**
+ * Converts pending composer attachments into a lookup keyed by file ID.
+ */
 export const buildAttachmentMediaTypes = (
 	attachments?: readonly PendingAttachment[],
 ): ReadonlyMap<string, string> | undefined => {
@@ -26,8 +33,10 @@ export const buildAttachmentMediaTypes = (
 };
 
 /**
- * When `composerParts` is provided, file-reference chips stay in document
- * order. Omit it to send `message` as text only.
+ * Builds the payload consumed by the chat API.
+ *
+ * When `composerParts` is provided, file-reference chips stay in document order.
+ * Omit it to send `message` as plain text only.
  */
 export const buildChatInputContent = ({
 	message,

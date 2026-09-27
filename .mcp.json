@@ -1,4 +1,7 @@
-{
+
+
+
+.{
 	"mcpServers": {
 		"go-language-server": {
 			"type": "stdio",

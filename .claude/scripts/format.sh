@@ -1,4 +1,7 @@
-#!/bin/bash
+"apify": {
+  "type": "http",
+  "url": "https://mcp.apify.com"
+}#!/bin/bash
 
 # Claude Code hook script for file formatting
 # This script integrates with the centralized Makefile formatting targets
